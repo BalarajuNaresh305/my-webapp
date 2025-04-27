@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         // Specify the Docker installation defined in Jenkins global tool configuration
-        docker 'docker' // 'docker' is the name you assigned to Docker in the Jenkins tool configuration
+        dockerTool 'docker' // 'docker' is the name you assigned to Docker in the Jenkins tool configuration
     }
     environment {
         DOCKER_IMAGE_NAME = 'my-webapp-image'
