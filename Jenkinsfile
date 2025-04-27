@@ -1,46 +1,25 @@
 pipeline {
     agent any
-
-    tools {
-        maven 'Maven3'
-        jdk 'Java17'
-    }
-
-    environment {
-        SONARQUBE = 'SonarQube'
-        NEXUS_URL = 'http://your-nexus-server/repository/maven-releases/'
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/your-username/my-webapp.git'
+                git credentialsId: 'your-credentials-id', url: 'https://github.com/BalarajuNaresh305/my-webapp.git'
             }
         }
-
-        stage('Build with Maven') {
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                script {
+                    // Build the Docker image with the name 'my-webapp-image'
+                    def app = docker.build('my-webapp-image')
                 }
             }
         }
-
-        stage('Upload Artifact to Nexus') {
+        stage('Run Docker Container') {
             steps {
-                sh 'mvn deploy -DaltDeploymentRepository=nexus::default=${NEXUS_URL}'
-            }
-        }
-
-        stage('Deploy to Tomcat') {
-            steps {
-                sh 'curl -v -u tomcat:tomcat --upload-file target/*.war http://your-tomcat-server:8080/manager/text/deploy?path=/my-webapp&update=true'
+                script {
+                    // Run the Docker container on port 8081
+                    docker.image('my-webapp-image').run('-d -p 8081:8080')
+                }
             }
         }
     }
