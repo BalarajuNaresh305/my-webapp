@@ -1,14 +1,14 @@
-# Use an official Nginx image
-FROM nginx:latest
+# Use the official Tomcat image
+FROM tomcat:9-jdk11-openjdk-slim
 
-# Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# Remove the default Tomcat webapp
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy your website files into the nginx folder
-COPY . /usr/share/nginx/html/
+# Copy your JSP file into the Tomcat webapps folder
+COPY index.jsp /usr/local/tomcat/webapps/ROOT/index.jsp
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080 (inside container)
+EXPOSE 8080
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start Tomcat server
+CMD ["catalina.sh", "run"]
